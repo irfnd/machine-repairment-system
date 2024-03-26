@@ -1,0 +1,40 @@
+{
+	"name": "machine-management",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"lint": "next lint",
+		"format": "prettier --write \"**/*.{js,jsx,cjs,mjs,json,yaml,css,md}\""
+	},
+	"dependencies": {
+		"@ant-design/icons": "^4.8.3",
+		"@ant-design/nextjs-registry": "^1.0.0",
+		"antd": "^5.15.4",
+		"dayjs": "^1.11.10",
+		"next": "14.1.4",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"react-highlight-words": "^0.20.0",
+		"zustand": "^4.5.2"
+	},
+	"devDependencies": {
+		"@irfnd/prettier-config": "^1.0.0",
+		"eslint": "^8.57.0",
+		"eslint-config-next": "14.1.4",
+		"eslint-config-prettier": "^9.1.0",
+		"husky": "^9.0.11",
+		"lint-staged": "^15.2.2",
+		"prettier": "^3.2.5"
+	},
+	"prettier": "@irfnd/prettier-config",
+	"lint-staged": {
+		"*/**/*.{json,yaml,css,md}": "prettier --write",
+		"*/**/*.{js,jsx,cjs,mjs}": [
+			"prettier --write",
+			"eslint --fix"
+		]
+	}
+}
