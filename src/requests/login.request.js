@@ -3,7 +3,7 @@
 import { signIn } from '@/utils/auth';
 import { AuthError } from 'next-auth';
 
-export async function loginAction(credentials) {
+export async function reqLogin(credentials) {
 	try {
 		await signIn('credentials', { ...credentials, redirect: false });
 	} catch (err) {

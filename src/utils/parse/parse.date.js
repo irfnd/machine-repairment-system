@@ -1,5 +1,6 @@
-import 'dayjs/locale/id';
 import dayjs from 'dayjs';
+
+dayjs.locale('id');
 
 function getDate(date) {
 	if (date?.toString()?.includes(' ')) return date?.toString()?.split(' ')[0];

@@ -1,7 +1,7 @@
 export const tableSlice = (set) => ({
 	table: {
-		data: [],
 		filter: {},
+		inputValue: '',
 		inputRef: { current: null },
 		pagination: { current: 1, pageSize: 10 },
 	},

@@ -6,7 +6,7 @@ import { theme } from '@/themes';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-	title: 'Machine Management',
+	title: { template: '%s | Machine Management', default: 'Machine Management' },
 	description: 'Machine Management System',
 };
 

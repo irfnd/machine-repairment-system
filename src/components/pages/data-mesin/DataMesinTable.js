@@ -3,61 +3,69 @@
 import * as React from 'react';
 import { useStore } from '@/states';
 import { parseTableFilter } from '@/utils/parse';
-import { filterArray } from '@/utils/array';
 import { ColumnProps } from '@/components/table';
+import { browseKategori, browseMesin } from '@/requests';
+import { useQuery } from '@tanstack/react-query';
 
 import { Table } from 'antd';
+import KategoriMesinTags from '@/components/flags/KategoriMesinTags';
+import StatusMesinTags from '@/components/flags/StatusMesinTags';
 
 export default function DataMesinTable() {
-	const [data, setData] = React.useState([]);
-	const [dataDefault, setDataDefault] = React.useState([]);
 	const { table, setTable } = useStore();
-	const { pagination } = table;
 
-	React.useEffect(() => {
-		const fetchedData = [
-			{ key: '1', name: 'John Brown', age: 32, address: 'New York No. 1 Lake Park' },
-			{ key: '2', name: 'Joe Black', age: 42, address: 'London No. 1 Lake Park' },
-			{ key: '3', name: 'Jim Green', age: 32, address: 'Sydney No. 1 Lake Park' },
-			{ key: '4', name: 'Jim Red', age: 32, address: 'London No. 2 Lake Park' },
-		];
-		setData(fetchedData);
-		setDataDefault(fetchedData);
-	}, []);
+	const kategori = useQuery({ queryKey: ['kategori'], queryFn: browseKategori });
+	const mesin = useQuery({ queryKey: ['mesin', table.filter], queryFn: browseMesin });
 
-	const handleTableChange = (_, filter, sorter) => {
-		console.log(sorter);
-		const filters = parseTableFilter(filter);
-		if (Object.keys(filters).length > 0) setData(filterArray(dataDefault, filters));
-		else setData(dataDefault);
+	const handleTableChange = (pagination, filter) => {
+		const { current: page, pageSize: limit } = pagination;
+		const parsedFilter = parseTableFilter(filter);
+		const filters = { page, limit, ...parsedFilter };
+		setTable({ filter: filters });
 	};
+	const handleSizeChange = (_curr, pageSize) => setTable({ pagination: { ...table.pagination, pageSize } });
 
 	const getColumnProps = (dataIndex) => {
 		return ColumnProps({
 			dataIndex,
-			numericFields: ['age'],
-			sorterFields: ['name'],
+			centerFields: ['categoryId', 'buyDate', 'status'],
+			dateFields: ['buyDate'],
+			flagFields: {
+				categoryId: {
+					detail: kategori.data?.map(({ id, categoryName }) => ({ text: categoryName, value: id })),
+					component: <KategoriMesinTags kategoriList={kategori.data} />,
+					placeholder: 'Pilih kategori mesin',
+				},
+				status: {
+					detail: [
+						{ text: 'Ready', value: 'ready' },
+						{ text: 'Perbaikan', value: 'perbaikan' },
+						{ text: 'Rusak', value: 'rusak' },
+					],
+					component: <StatusMesinTags />,
+					placeholder: 'Pilih status mesin',
+				},
+			},
 		});
 	};
-
-	const columns = React.useMemo(
-		() => [
-			{ title: 'Name', ...getColumnProps('name') },
-			{ title: 'Age', ...getColumnProps('age') },
-			{ title: 'Address', ...getColumnProps('address') },
-		],
-		[]
-	);
-
-	const paginationOptions = React.useMemo(
-		() => ({ ...pagination, showSizeChanger: true, pageSizeOptions: ['10', '20', '50', '100'] }),
-		[pagination]
-	);
+	const columns = [
+		{ title: 'Nama Mesin', ...getColumnProps('machineName') },
+		{ title: 'Tanggal Beli', ...getColumnProps('buyDate') },
+		{ title: 'Kategori', ...getColumnProps('categoryId') },
+		{ title: 'Status', ...getColumnProps('status') },
+	];
+	const paginationOptions = {
+		...table.pagination,
+		showSizeChanger: true,
+		pageSizeOptions: ['10', '20', '50', '100'],
+		onShowSizeChange: handleSizeChange,
+	};
 
 	return (
 		<Table
+			loading={mesin.isLoading || kategori.isLoading}
 			columns={columns}
-			dataSource={data}
+			dataSource={mesin.data?.machines}
 			onChange={handleTableChange}
 			pagination={paginationOptions}
 			scroll={{ x: 'max-content' }}

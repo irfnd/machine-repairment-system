@@ -1,10 +1,10 @@
 import { useStore } from '@/states';
+import { omitObject } from '@/utils/object';
 
 import { Flex, Button } from 'antd';
 import { SearchOutlined, CloseOutlined } from '@ant-design/icons';
+import { RenderFilterExist, RenderFilterNotExist } from '@/components/table/RenderFilterHighlighter';
 import RenderFilterInput from '@/components/table/RenderFilterInput';
-import RenderFilterExist from '@/components/table/RenderFilterNotExist';
-import RenderFilterNotExist from '@/components/table/RenderFilterExist';
 
 export function ColumnProps(props) {
 	const {
@@ -20,17 +20,26 @@ export function ColumnProps(props) {
 	const { table, setTable } = useStore.getState();
 	const { inputRef } = table;
 
-	const setFilter = ({ setSelectedKeys, selectedKey, key, isDate = false }) => {
-		const value = isDate ? selectedKey?.format('YYYY-MM-DD') : selectedKey;
+	const debounceFilter = _.debounce(({ value, key }) => {
 		setTable({ filter: { ...table.filter, [key]: value } });
-		setSelectedKeys(selectedKey ? [value] : []);
+	}, 500);
+
+	const setFilter = ({ setSelectedKeys, value, key, isDate = false }) => {
+		if (value || value.length > 0) {
+			const checkValue = isDate ? value?.format('YYYY-MM-DD') : value;
+			setSelectedKeys([checkValue]);
+			debounceFilter({ value: checkValue, key });
+		} else {
+			setSelectedKeys([]);
+			const unsetFilter = omitObject(table.filter, [key]);
+			setTable({ filter: unsetFilter });
+		}
 	};
 
 	const resetFilter = ({ key, clearFilters, confirm }) => {
 		const resetPagination = { ...table.pagination, current: 1 };
-		const getFilter = { ...table.filter };
-		delete getFilter[key];
-		setTable({ filter: getFilter, pagination: resetPagination });
+		const unsetFilter = omitObject(table.filter, [key]);
+		setTable({ filter: unsetFilter, pagination: resetPagination });
 		clearFilters();
 		confirm();
 	};
@@ -41,13 +50,13 @@ export function ColumnProps(props) {
 		return 'left';
 	};
 
-	function checkFieldType() {
+	const checkFieldType = () => {
 		if (dateFields.includes(dataIndex)) return 'date';
-		if (currencyFields.includes(dataIndex)) return 'currency';
-		if (numericFields.includes(dataIndex)) return 'numeric';
-		if (Object.keys(flagFields).includes(dataIndex)) return 'flag';
-		return null;
-	}
+		else if (currencyFields.includes(dataIndex)) return 'currency';
+		else if (numericFields.includes(dataIndex)) return 'numeric';
+		else if (Object.keys(flagFields).includes(dataIndex)) return 'flag';
+		else return null;
+	};
 
 	return {
 		dataIndex,
@@ -60,25 +69,22 @@ export function ColumnProps(props) {
 			const inputProps = { dataIndex, fieldType, filterProps, flagFields, setFilter };
 
 			return (
-				<Flex gap={8} style={{ padding: 8, width: 250 }} onKeyDown={(e) => e.stopPropagation()} vertical>
+				<Flex gap={8} style={{ padding: 8, width: 250 }} onKeyDown={(e) => e.stopPropagation()}>
 					<RenderFilterInput {...inputProps} />
-					<Flex gap={8}>
-						<Button type='primary' onClick={() => confirm()} icon={<SearchOutlined />} size='small' block>
-							Search
-						</Button>
-						<Button
-							onClick={() => resetFilter({ key: dataIndex, clearFilters, confirm })}
-							icon={<CloseOutlined />}
-							size='small'
-							block
-						>
-							Reset
-						</Button>
-					</Flex>
+					<Button
+						onClick={() => resetFilter({ key: dataIndex, clearFilters, confirm })}
+						icon={<CloseOutlined />}
+						type='primary'
+						size='small'
+						style={{ height: 'unset', width: 34 }}
+						danger
+					/>
 				</Flex>
 			);
 		},
-		filterIcon: (filtered) => <SearchOutlined style={{ color: filtered ? '#389e0d' : undefined }} />,
+		filterIcon: (filtered) => (
+			<SearchOutlined style={{ color: filtered || table.filter[dataIndex] ? '#389e0d' : undefined }} />
+		),
 		onFilterDropdownOpenChange: (visible) => {
 			if (visible) {
 				setTimeout(() => {
@@ -89,10 +95,12 @@ export function ColumnProps(props) {
 		},
 		render: (value) => {
 			const fieldType = checkFieldType();
-			const commonProps = { fieldType, flagFields, dataIndex, value };
+			const fieldDetails = { dateFields, currencyFields, numericFields, flagFields };
+			const commonProps = { fieldDetails, fieldType, dataIndex, value };
+			const filter = table.filter;
 
-			if (Object.keys(table.filter).includes(dataIndex)) return <RenderFilterExist {...commonProps} />;
-			return <RenderFilterNotExist {...commonProps} />;
+			if (Object.keys(filter).includes(dataIndex)) return <RenderFilterExist {...{ filter, ...commonProps }} />;
+			else return <RenderFilterNotExist {...commonProps} />;
 		},
 	};
 }

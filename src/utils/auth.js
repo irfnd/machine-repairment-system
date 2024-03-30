@@ -12,7 +12,7 @@ const authConfig = {
 			async authorize(credentials) {
 				try {
 					const results = await api.post('/auth/login', credentials);
-					if (!results.data || Object.keys(results.data.data).length < 1) return null;
+					if (!results.data.data) return null;
 					return results.data.data;
 				} catch (err) {
 					return null;
@@ -51,7 +51,6 @@ const authConfig = {
 	},
 	session: { strategy: 'jwt' },
 	pages: { signIn: '/login' },
-	basePath: '/api/auth',
 };
 
 export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth(authConfig);
