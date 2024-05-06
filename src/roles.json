@@ -1,0 +1,13 @@
+{
+	"supervisior": [
+		{ "menu": "/mesin", "permission": "CRUD" },
+		{ "menu": "/hasil-perbaikan", "permission": "R" },
+		{ "menu": "/karyawan", "permission": "CRUD" },
+		{ "menu": "/biodata", "permission": "CRUD" }
+	],
+	"produksi": [
+		{ "menu": "/mesin", "permission": "CRUD" },
+		{ "menu": "/kerusakan", "permission": "CRUD" },
+		{ "menu": "/biodata", "permission": "CRUD" }
+	]
+}

@@ -1,15 +1,12 @@
-'use client';
-
-import * as React from 'react';
-import { useStore } from '@/states';
-import { parseTableFilter } from '@/utils/parse';
 import { ColumnProps } from '@/components/table';
 import { browseKategori, browseMesin } from '@/requests';
+import { useStore } from '@/states';
+import { parseTableFilter } from '@/utils/parse';
 import { useQuery } from '@tanstack/react-query';
 
-import { Table } from 'antd';
 import KategoriMesinTags from '@/components/flags/KategoriMesinTags';
 import StatusMesinTags from '@/components/flags/StatusMesinTags';
+import { Table } from 'antd';
 
 export default function DataMesinTable() {
 	const { table, setTable } = useStore();
@@ -49,7 +46,7 @@ export default function DataMesinTable() {
 		});
 	};
 	const columns = [
-		{ title: 'Nama Mesin', ...getColumnProps('machineName') },
+		{ title: 'Mesin', ...getColumnProps('machineName') },
 		{ title: 'Tanggal Beli', ...getColumnProps('buyDate') },
 		{ title: 'Kategori', ...getColumnProps('categoryId') },
 		{ title: 'Status', ...getColumnProps('status') },
@@ -69,6 +66,7 @@ export default function DataMesinTable() {
 			onChange={handleTableChange}
 			pagination={paginationOptions}
 			scroll={{ x: 'max-content' }}
+			rowKey={'id'}
 		/>
 	);
 }

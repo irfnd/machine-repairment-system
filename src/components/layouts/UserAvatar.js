@@ -32,7 +32,7 @@ export default function UsersAvatar() {
 		<Flex align='center' gap='10px' style={{ paddingRight: '20px' }}>
 			<Flex vertical align='flex-end'>
 				<Typography.Text style={{ fontWeight: 700, lineHeight: 1 }}>{_.startCase(fullname)}</Typography.Text>
-				<Typography.Text italic>{_.capitalize(role)}</Typography.Text>
+				<Typography.Text italic>{_.capitalize(role)}</Typography.Text>{' '}
 			</Flex>
 			<Dropdown menu={{ items: userMenu, onClick: onClickMenu }} trigger={['click']}>
 				<Button type='text' shape='circle' style={{ padding: 0, width: 'fit-content', height: 'fit-content' }}>

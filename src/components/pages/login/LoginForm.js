@@ -1,15 +1,15 @@
 'use client';
 
-import * as React from 'react';
-import { useRouter } from 'next/navigation';
 import { reqLogin } from '@/requests';
+import { useRouter } from 'next/navigation';
+import * as React from 'react';
 
-import { Flex, Card, Form, Input, Button, Grid, notification, theme } from 'antd';
-import { LockOutlined, UserOutlined, LoginOutlined } from '@ant-design/icons';
+import { LockOutlined, LoginOutlined, ShopOutlined, UserOutlined } from '@ant-design/icons';
+import { Button, Card, Flex, Form, Grid, Input, notification, theme } from 'antd';
 
 export default function LoginForm() {
 	const [submitLoading, setSubmitLoading] = React.useState(false);
-	const [api, contextHolder] = notification.useNotification();
+	const [notif, notifContext] = notification.useNotification();
 	const { token } = theme.useToken();
 	const { xs } = Grid.useBreakpoint();
 	const router = useRouter();
@@ -18,21 +18,24 @@ export default function LoginForm() {
 		try {
 			setSubmitLoading(true);
 			await reqLogin(values);
-			api.success({ message: 'Berhasil Masuk', description: 'Selamat Datang Kembali!' });
+			notif.success({ message: 'Berhasil Masuk', description: 'Selamat Datang Kembali!' });
 			setSubmitLoading(false);
-			setTimeout(() => router.replace('/data-mesin'), 500);
+			setTimeout(() => router.replace('/'), 500);
 		} catch (err) {
-			if (err instanceof Error) api.error({ message: 'Gagal Masuk', description: err.message });
+			if (err instanceof Error) notif.error({ message: 'Gagal Masuk', description: err.message });
 			setSubmitLoading(false);
 		}
 	};
 
 	return (
-		<Card bordered={false} style={{ width: 350, margin: xs ? 15 : 0 }}>
-			<Flex vertical gap={25}>
-				<Flex vertical style={{ textAlign: 'center' }}>
-					<h2 style={{ margin: 0 }}>Machine Management</h2>
-					<span style={{ color: token.colorTextDescription }}>Silahkan masuk untuk melanjutkan</span>
+		<Card bordered={false} style={{ width: 400, margin: xs ? 15 : 0 }}>
+			<Flex vertical gap={30}>
+				<Flex gap={15}>
+					<ShopOutlined style={{ fontSize: xs ? 40 : 45, color: token.colorPrimary }} />
+					<Flex vertical>
+						<p style={{ fontSize: xs ? 18 : 20, margin: 0, fontWeight: 700 }}>PT Sumber Boga Indonesia</p>
+						<span style={{ color: token.colorTextDescription }}>Machine Maintenance</span>
+					</Flex>
 				</Flex>
 
 				<Form onFinish={onLogin}>
@@ -40,18 +43,21 @@ export default function LoginForm() {
 						<Input prefix={<UserOutlined />} size='large' placeholder='Email/Username' />
 					</Form.Item>
 					<Form.Item name='password' rules={[{ required: true, message: 'Harap masukan Password Anda!' }]}>
-						<Input prefix={<LockOutlined />} type='password' size='large' placeholder='Password' />
+						<Input.Password prefix={<LockOutlined />} type='password' size='large' placeholder='Password' />
 					</Form.Item>
 					<Form.Item style={{ marginBottom: 10 }}>
-						<Flex justify='flex-end' style={{ marginTop: 10 }}>
+						<Flex vertical align='flex-end' gap={10} style={{ marginTop: 10 }}>
 							<Button type='primary' htmlType='submit' icon={<LoginOutlined />} size='large' loading={submitLoading} block>
 								Masuk
 							</Button>
+							<p style={{ textAlign: 'center', fontSize: 12, color: token.colorTextLabel, margin: 0 }}>
+								*Jika ada kendala terhadap akses login harap menghubungi supervisior
+							</p>
 						</Flex>
 					</Form.Item>
 				</Form>
 			</Flex>
-			{contextHolder}
+			{notifContext}
 		</Card>
 	);
 }

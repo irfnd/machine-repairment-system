@@ -37,16 +37,18 @@ const authConfig = {
 			if (token) Object.assign(session.user, omitObject(token, ['sub', 'exp', 'iat', 'jti']));
 			return session;
 		},
-		authorized({ auth, request: { nextUrl } }) {
+		authorized({ auth, request }) {
+			const { nextUrl } = request;
 			const isLoggedIn = !!auth?.user;
-			const isOnDashboard = nextUrl.pathname === '/data-mesin';
-			if (isOnDashboard) {
+			const isOnLogin = nextUrl.pathname === '/login';
+
+			if (isOnLogin) {
+				if (isLoggedIn) return Response.redirect(new URL('/', nextUrl));
+				return true;
+			} else {
 				if (isLoggedIn) return true;
 				return false;
-			} else if (isLoggedIn) {
-				return Response.redirect(new URL('/data-mesin', nextUrl));
 			}
-			return true;
 		},
 	},
 	session: { strategy: 'jwt' },

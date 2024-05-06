@@ -6,8 +6,8 @@ import { theme } from '@/themes';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-	title: { template: '%s | Machine Management', default: 'Machine Management' },
-	description: 'Machine Management System',
+	title: { template: '%s | Machine Maintenance', default: 'Loading | Machine Maintenance' },
+	description: 'Machine Maintenance System',
 };
 
 export default function RootLayout({ children }) {

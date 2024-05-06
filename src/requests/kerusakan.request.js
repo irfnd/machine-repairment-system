@@ -1,12 +1,12 @@
 import { api } from '@/utils/api';
 import { useStore } from '@/states';
 
-export const browseMesin = async ({ queryKey }) => {
+export const browseKerusakan = async ({ queryKey }) => {
 	const [_key, params] = queryKey;
 	const { table, setTable } = useStore.getState();
 
 	try {
-		const { data } = await api.get('/machine/all', { params });
+		const { data } = await api.get('/repairment', { params });
 		setTable({
 			pagination: {
 				...table.pagination,
@@ -20,27 +20,36 @@ export const browseMesin = async ({ queryKey }) => {
 	}
 };
 
-export const addMesin = async (newData) => {
+export const getKerusakanById = async (id) => {
 	try {
-		const { data } = await api.post('/machine/create', newData);
+		const { data } = await api.get(`/repairment/${id}`);
 		return data?.data;
 	} catch (err) {
 		throw new Error(err.response?.data?.message || 'Terjadi kesalahan!');
 	}
 };
 
-export const updateMesin = async ({ id, newData }) => {
+export const addKerusakan = async (newData) => {
 	try {
-		const { data } = await api.patch(`/machine/edit/${id}`, newData);
+		const { data } = await api.post('/repairment/create', newData);
 		return data?.data;
 	} catch (err) {
 		throw new Error(err.response?.data?.message || 'Terjadi kesalahan!');
 	}
 };
 
-export const deleteMesin = async (id) => {
+export const updateKerusakan = async ({ id, newData }) => {
 	try {
-		const { data } = await api.delete(`/machine/${id}`);
+		const { data } = await api.patch(`/repairment/edit/${id}`, newData);
+		return data?.data;
+	} catch (err) {
+		throw new Error(err.response?.data?.message || 'Terjadi kesalahan!');
+	}
+};
+
+export const deleteKerusakan = async (id) => {
+	try {
+		const { data } = await api.delete(`/repairment/${id}`);
 		return data?.data;
 	} catch (err) {
 		throw new Error(err.response?.data?.message || 'Terjadi kesalahan!');

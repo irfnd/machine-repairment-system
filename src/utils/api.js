@@ -1,12 +1,12 @@
+import axios from 'axios';
 import { auth, unstable_update } from '@/utils/auth';
 import { getCsrfToken, getSession } from 'next-auth/react';
-import axios from 'axios';
 
+const isServer = typeof window === 'undefined';
 const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const api = axios.create({ baseURL: BASE_API_URL });
 
-const isServer = typeof window === 'undefined';
 let isFetchedToken = false;
 let subscribers = [];
 
@@ -14,11 +14,19 @@ const onAccessTokenFetched = (token) => {
 	subscribers.forEach((callback) => callback(token));
 	subscribers = [];
 };
-const addSubscriber = (callback) => subscribers.push(callback);
+
+const addSubscriber = (callback) => {
+	subscribers.push(callback);
+};
+
+const fetchSession = async () => {
+	const session = isServer ? await auth() : await getSession();
+	return session;
+};
 
 api.interceptors.request.use(
 	async (request) => {
-		const session = isServer ? await auth() : await getSession();
+		const session = await fetchSession();
 		if (session) request.headers.Authorization = `Bearer ${session.user.token}`;
 		return request;
 	},
@@ -30,14 +38,13 @@ api.interceptors.request.use(
 api.interceptors.response.use(
 	(response) => response,
 	async (error) => {
+		const { response } = error;
 		if (
-			(error.response.status === 401 || error.response.status === 403) &&
-			!error.response.config.url.includes('/refresh-token') &&
-			!error.response.config.url.includes('/login')
+			[401, 403].includes(response.status) &&
+			!response.config.url.includes('/refresh-token') &&
+			!response.config.url.includes('/login')
 		) {
 			try {
-				const { response } = error;
-
 				const retryOriginalRequest = new Promise((resolve) => {
 					addSubscriber((token) => {
 						response.config.headers.Authorization = `Bearer ${token}`;
@@ -47,18 +54,21 @@ api.interceptors.response.use(
 
 				if (!isFetchedToken) {
 					isFetchedToken = true;
-					const session = isServer ? await auth() : await getSession();
+					const session = await fetchSession();
 					const { token, refreshToken } = session.user;
 
 					const headers = { 'refresh-token': refreshToken, Authorization: `Bearer ${token}` };
 					const { data: user } = await api.get('/auth/refresh-token', { headers });
-
 					const newUserData = { token: user.data.token, refreshToken: user.data.refreshToken };
-					if (isServer) await unstable_update({ user: newUserData });
 
-					const csrfToken = await getCsrfToken();
-					await axios.post('/api/auth/session', { csrfToken, data: { user: newUserData } });
-					onAccessTokenFetched(data.data.token);
+					if (isServer) {
+						await unstable_update({ user: newUserData });
+					} else {
+						const csrfToken = await getCsrfToken();
+						await axios.post('/api/auth/session', { csrfToken, data: { user: newUserData } });
+					}
+
+					onAccessTokenFetched(user.data.token);
 				}
 				return retryOriginalRequest;
 			} catch (error) {

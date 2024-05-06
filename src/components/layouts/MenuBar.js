@@ -1,34 +1,64 @@
+import { useStore } from '@/states';
+import { useRoleMenu } from '@/utils/hooks';
+import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 
+import {
+	CarryOutOutlined,
+	ExceptionOutlined,
+	FileDoneOutlined,
+	FileSearchOutlined,
+	SettingOutlined,
+	SolutionOutlined,
+	TeamOutlined,
+	UserOutlined,
+} from '@ant-design/icons';
 import { Menu } from 'antd';
-import { SettingOutlined, ToolOutlined, UserOutlined } from '@ant-design/icons';
 
-export default function MenuBar() {
+export default function MenuBar({ inDrawer = false }) {
+	const { setSidebar } = useStore();
+	const { menu: roleMenu } = useRoleMenu();
 	const pathname = usePathname();
+	const router = useRouter();
 
-	const selectedKey = React.useMemo(() => `${pathname === '/' ? '/data-mesin' : pathname}`, [pathname]);
-	const menuList = React.useMemo(
+	const selectedKey = React.useMemo(() => `${pathname === '/' ? undefined : pathname}`, [pathname]);
+
+	const allMenu = React.useMemo(
 		() => [
-			{
-				key: '/data-mesin',
-				icon: <SettingOutlined />,
-				label: <Link href='/data-mesin'>Data Mesin</Link>,
-			},
-			{
-				key: '/data-kerusakan',
-				icon: <ToolOutlined />,
-				label: <Link href='/data-kerusakan'>Data Kerusakan</Link>,
-			},
-			{
-				key: '/biodata',
-				icon: <UserOutlined />,
-				label: <Link href='/biodata'>Biodata</Link>,
-			},
+			{ key: '/absensi', icon: <CarryOutOutlined style={{ fontSize: 18 }} />, label: 'Absensi' },
+			{ key: '/mesin', icon: <SettingOutlined style={{ fontSize: 18 }} />, label: 'Data Mesin' },
+			{ key: '/kerusakan', icon: <ExceptionOutlined style={{ fontSize: 18 }} />, label: 'Laporan Kerusakan' },
+			{ key: '/penugasan', icon: <SolutionOutlined style={{ fontSize: 18 }} />, label: 'Penugasan' },
+			{ key: '/perbaikan', icon: <FileSearchOutlined style={{ fontSize: 18 }} />, label: 'Laporan Perbaikan' },
+			{ key: '/hasil-perbaikan', icon: <FileDoneOutlined style={{ fontSize: 18 }} />, label: 'Laporan Hasil Perbaikan' },
+			{ key: '/karyawan', icon: <TeamOutlined style={{ fontSize: 18 }} />, label: 'Data Karyawan' },
+			{ key: '/teknisi', icon: <TeamOutlined style={{ fontSize: 18 }} />, label: 'Data Teknisi' },
+			{ key: '/biodata', icon: <UserOutlined style={{ fontSize: 18 }} />, label: 'Biodata' },
 		],
 		[]
 	);
 
-	return <Menu theme='dark' mode='inline' selectedKeys={[selectedKey]} items={menuList} style={{ paddingInline: '15px' }} />;
+	const menuList = React.useMemo(() => {
+		if (roleMenu) {
+			const menuKeys = new Set(roleMenu.map((menus) => menus.menu));
+			return allMenu.filter((item) => menuKeys.has(item.key));
+		}
+		return allMenu;
+	}, [roleMenu, allMenu]);
+
+	const onClickMenu = ({ key }) => {
+		router.push(key);
+		if (inDrawer) setSidebar({ openDrawer: false });
+	};
+
+	return (
+		<Menu
+			theme='dark'
+			mode='inline'
+			selectedKeys={[selectedKey]}
+			items={menuList}
+			onClick={onClickMenu}
+			style={{ paddingInline: '15px' }}
+		/>
+	);
 }
