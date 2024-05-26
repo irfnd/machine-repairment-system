@@ -1,8 +1,7 @@
-import NextAuth from 'next-auth';
-import Credentials from 'next-auth/providers/credentials';
 import { api } from '@/utils/api';
 import { jwtDecode } from 'jwt-decode';
-import { omitObject } from '@/utils/object';
+import NextAuth from 'next-auth';
+import Credentials from 'next-auth/providers/credentials';
 
 const authConfig = {
 	providers: [
@@ -23,18 +22,21 @@ const authConfig = {
 	callbacks: {
 		async jwt({ token, user, session, trigger }) {
 			if (trigger === 'signIn' && user?.token) {
-				const decodedToken = omitObject(jwtDecode(user.token), ['exp', 'iat', 'iss']);
+				const { exp, iat, iss, ...decodedToken } = jwtDecode(user.token);
 				const tokens = { token: user.token, refreshToken: user.refreshToken };
 				Object.assign(token, { ...decodedToken, ...tokens });
 			} else if (trigger === 'update' && session.user?.token) {
-				const decodedToken = omitObject(jwtDecode(session.user.token), ['exp', 'iat', 'iss']);
+				const { exp, iat, iss, ...decodedToken } = jwtDecode(session.user.token);
 				const tokens = { token: session.user.token, refreshToken: session.user.refreshToken };
 				Object.assign(token, { ...decodedToken, ...tokens });
 			}
 			return token;
 		},
 		async session({ session, token }) {
-			if (token) Object.assign(session.user, omitObject(token, ['sub', 'exp', 'iat', 'jti']));
+			if (token) {
+				const { sub, exp, iat, jti, ...decodedToken } = token;
+				Object.assign(session.user, decodedToken);
+			}
 			return session;
 		},
 		authorized({ auth, request }) {
