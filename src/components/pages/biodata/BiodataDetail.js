@@ -102,6 +102,7 @@ export default function BiodataDetail() {
 					icon={<QrcodeOutlined />}
 					block={!sm}
 					onClick={() => setBiodata({ modalPasswordVisible: true })}
+					disabled={getBiodata.isLoading}
 				>
 					Ubah Password
 				</Button>

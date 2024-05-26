@@ -24,7 +24,7 @@ export default function Layout({ children }) {
 
 	return (
 		<QueryProvider>
-			<AntLayout style={{ minHeight: '100vh' }}>
+			<AntLayout style={{ minHeight: '100vh' }} hasSider>
 				<AntLayout.Sider
 					breakpoint='lg'
 					collapsedWidth={sidebar.isDrawer ? '0' : '85'}
@@ -33,14 +33,33 @@ export default function Layout({ children }) {
 					width={300}
 					collapsed={sidebar.collapsed}
 					collapsible
+					style={{
+						overflow: 'auto',
+						height: '100vh',
+						position: 'sticky',
+						left: 0,
+						top: 0,
+						bottom: 0,
+					}}
 				>
 					<div style={{ width: '100%', height: '40px', margin: '10px auto 20px' }} />
 					<MenuBar />
 				</AntLayout.Sider>
 				<Drawer />
 				<AntLayout>
-					<AntLayout.Header style={{ padding: '0', background: token.colorBgContainer }}>
-						<Flex align='center' justify='space-between'>
+					<AntLayout.Header
+						style={{
+							padding: '0',
+							background: token.colorBgContainer,
+							position: 'sticky',
+							top: 0,
+							zIndex: 1,
+							width: '100%',
+							display: 'flex',
+							alignItems: 'center',
+						}}
+					>
+						<Flex align='center' justify='space-between' style={{ width: '100%' }}>
 							<Button
 								type='text'
 								icon={<MenuOutlined />}

@@ -1,5 +1,5 @@
-import { Flex } from 'antd';
 import LoginForm from '@/components/pages/login/LoginForm';
+import { Flex } from 'antd';
 
 export const metadata = {
 	title: 'Login',

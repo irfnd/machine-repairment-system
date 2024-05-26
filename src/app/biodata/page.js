@@ -1,9 +1,9 @@
 import { auth } from '@/utils/auth';
 
-import { Flex } from 'antd';
 import Layout from '@/components/layouts';
-import SessionProvider from '@/components/providers/SessionProvider';
 import BiodataDetail from '@/components/pages/biodata/BiodataDetail';
+import SessionProvider from '@/components/providers/SessionProvider';
+import { Flex } from 'antd';
 
 export const metadata = {
 	title: 'Biodata',

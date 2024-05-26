@@ -3,11 +3,11 @@ import { useStore } from '@/states';
 import { Pagination } from 'antd';
 
 export default function MesinGridPagination({ loading, selectBox = false }) {
-	const { table, setTable } = useStore();
-	const { pagination } = table;
+	const { mesin, setMesinTable } = useStore();
+	const { pagination } = mesin.table;
 
 	const onPaginate = (page, limit) => {
-		setTable({ pagination: { ...pagination, current: page, pageSize: limit } });
+		setMesinTable({ pagination: { ...pagination, current: page, pageSize: limit } });
 	};
 
 	const divStyle = !selectBox

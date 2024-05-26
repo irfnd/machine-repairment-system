@@ -1,11 +1,13 @@
-import { create } from 'zustand';
 import * as slices from '@/states/slices';
+import { create } from 'zustand';
 
-export const useStore = create()((...a) => ({
-	...slices.sidebarSlice(...a),
-	...slices.tableSlice(...a),
-	...slices.kategoriSlice(...a),
-	...slices.mesinSlice(...a),
-	...slices.kerusakanSlice(...a),
-	...slices.biodataSlice(...a),
+export const useStore = create()((...rest) => ({
+	...slices.absensiSlice(...rest),
+	...slices.biodataSlice(...rest),
+	...slices.kategoriSlice(...rest),
+	...slices.mesinSlice(...rest),
+	...slices.penugasanSlice(...rest),
+	...slices.perbaikanSlice(...rest),
+	...slices.sidebarSlice(...rest),
+	...slices.teknisiSlice(...rest),
 }));

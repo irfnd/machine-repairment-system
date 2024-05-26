@@ -1,21 +1,25 @@
 import { ColumnProps } from '@/components/table';
-import { browseKategori, browseKerusakan } from '@/requests';
+import { browseKategori, browsePerbaikan } from '@/requests';
 import { useStore } from '@/states';
+import { useUser } from '@/utils/hooks';
 import { parseTableFilter } from '@/utils/parse';
 import { useQueries } from '@tanstack/react-query';
+import * as React from 'react';
 
 import KategoriMesinTags from '@/components/flags/KategoriMesinTags';
 import StatusPerbaikanTags from '@/components/flags/StatusPerbaikanTags';
-import { EyeOutlined, DeleteOutlined, EditOutlined, FileAddOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, EyeOutlined, FileAddOutlined } from '@ant-design/icons';
 import { Button, Flex, Table } from 'antd';
 
-export default function KerusakanTable() {
-	const { table, setTable, setKerusakan } = useStore();
+export default function PerbaikanTable() {
+	const { perbaikan: perbaikanState, setPerbaikanTable, setPerbaikan } = useStore();
+	const { table } = perbaikanState;
+	const user = useUser();
 
-	const [kategori, kerusakan] = useQueries({
+	const [kategori, perbaikan] = useQueries({
 		queries: [
 			{ queryKey: ['kategori'], queryFn: browseKategori },
-			{ queryKey: ['kerusakan', table.filter], queryFn: browseKerusakan },
+			{ queryKey: ['perbaikan', table.filter], queryFn: browsePerbaikan },
 		],
 	});
 
@@ -23,15 +27,15 @@ export default function KerusakanTable() {
 		const { current: page, pageSize: limit } = pagination;
 		const parsedFilter = parseTableFilter(filter);
 		const filters = { page, limit, ...parsedFilter };
-		setTable({ filter: filters });
+		setPerbaikanTable({ filter: filters });
 	};
 
 	const handleSizeChange = (_curr, pageSize) => {
-		setTable({ pagination: { ...table.pagination, pageSize } });
+		setPerbaikanTable({ pagination: { ...table.pagination, pageSize } });
 	};
 
 	const onSetForm = (data, type) => {
-		setKerusakan({
+		setPerbaikan({
 			formType: type,
 			selectedData: data,
 			modalShowVisible: type === 'show',
@@ -42,6 +46,7 @@ export default function KerusakanTable() {
 
 	const getColumnProps = (dataIndex) => {
 		return ColumnProps({
+			slice: 'perbaikan',
 			dataIndex,
 			centerFields: ['categoryId', 'repairmentDate', 'status'],
 			dateFields: ['repairmentDate'],
@@ -66,6 +71,15 @@ export default function KerusakanTable() {
 		});
 	};
 
+	const updateBtnDisabled = React.useCallback(
+		(status) => {
+			if (user?.role === 'produksi') return status !== 'Menunggu Konfirmasi';
+			else if (user?.role === 'leader') return !['Menunggu Konfirmasi', 'Proses Perbaikan'].includes(status);
+			else return true;
+		},
+		[user]
+	);
+
 	const columns = [
 		{
 			title: 'Aksi',
@@ -78,13 +92,13 @@ export default function KerusakanTable() {
 						type='primary'
 						icon={<EditOutlined />}
 						onClick={() => onSetForm(data, 'update')}
-						disabled={data.status !== 'Menunggu Konfirmasi'}
+						disabled={updateBtnDisabled(data.status)}
 					/>
 					<Button
 						type='primary'
 						icon={<DeleteOutlined />}
 						onClick={() => onSetForm(data, 'delete')}
-						disabled={data.status !== 'Menunggu Konfirmasi'}
+						disabled={data.status !== 'Menunggu Konfirmasi' || ['supervisior', 'leader'].includes(user?.role)}
 						danger
 					/>
 				</Flex>
@@ -103,23 +117,30 @@ export default function KerusakanTable() {
 		onShowSizeChange: handleSizeChange,
 	};
 
+	const filterPerbaikan = React.useMemo(() => {
+		const selectedStatus = ['Menunggu Konfirmasi', 'Proses Perbaikan'];
+		return perbaikan.data?.repairments.filter(({ status }) => selectedStatus.includes(status));
+	}, [perbaikan]);
+
 	return (
 		<Flex vertical gap={25} style={{ width: '100%', height: '100%' }}>
-			<Flex>
-				<Button
-					type='primary'
-					size='large'
-					icon={<FileAddOutlined />}
-					onClick={() => setKerusakan({ modalAddVisible: true })}
-				>
-					Tambah Laporan
-				</Button>
-			</Flex>
+			{!['supervisior', 'leader'].includes(user?.role) ? (
+				<Flex>
+					<Button
+						type='primary'
+						size='large'
+						icon={<FileAddOutlined />}
+						onClick={() => setPerbaikan({ modalAddVisible: true })}
+					>
+						Tambah Laporan
+					</Button>
+				</Flex>
+			) : null}
 
 			<Table
-				loading={kerusakan.isLoading || kategori.isLoading}
+				loading={perbaikan.isLoading || kategori.isLoading}
 				columns={columns}
-				dataSource={kerusakan.data?.repairments}
+				dataSource={filterPerbaikan}
 				onChange={handleTableChange}
 				pagination={paginationOptions}
 				scroll={{ x: 'max-content' }}

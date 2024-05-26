@@ -12,6 +12,7 @@ export default function UsersAvatar() {
 	const userMenu = React.useMemo(() => [{ key: '/logout', label: 'Keluar', icon: <LogoutOutlined />, danger: true }], []);
 	const fullname = session?.user ? `${session?.user?.firstName} ${session?.user?.lastName}` : 'Username';
 	const role = session?.user ? session?.user?.role : 'Role';
+	const imageUrl = session?.user ? session?.user?.imageUrl : null;
 
 	const onLogout = async () => {
 		await modal.confirm({
@@ -32,11 +33,11 @@ export default function UsersAvatar() {
 		<Flex align='center' gap='10px' style={{ paddingRight: '20px' }}>
 			<Flex vertical align='flex-end'>
 				<Typography.Text style={{ fontWeight: 700, lineHeight: 1 }}>{_.startCase(fullname)}</Typography.Text>
-				<Typography.Text italic>{_.capitalize(role)}</Typography.Text>{' '}
+				<Typography.Text italic>{_.capitalize(role)}</Typography.Text>
 			</Flex>
 			<Dropdown menu={{ items: userMenu, onClick: onClickMenu }} trigger={['click']}>
 				<Button type='text' shape='circle' style={{ padding: 0, width: 'fit-content', height: 'fit-content' }}>
-					<Avatar size='large' icon={<UserOutlined />} />
+					<Avatar size='large' src={imageUrl} icon={!imageUrl ? <UserOutlined /> : null} />
 				</Button>
 			</Dropdown>
 			{contextHolder}

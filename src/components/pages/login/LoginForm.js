@@ -28,7 +28,7 @@ export default function LoginForm() {
 	};
 
 	return (
-		<Card bordered={false} style={{ width: 400, margin: xs ? 15 : 0 }}>
+		<Card bordered={false} style={{ width: 400, padding: 10, margin: xs ? 15 : 0 }}>
 			<Flex vertical gap={30}>
 				<Flex gap={15}>
 					<ShopOutlined style={{ fontSize: xs ? 40 : 45, color: token.colorPrimary }} />

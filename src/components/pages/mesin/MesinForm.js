@@ -7,7 +7,7 @@ import _ from 'lodash';
 import * as React from 'react';
 
 import { CheckOutlined, CloseOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, DatePicker, Flex, Form, Image, Input, notification, Select, Upload } from 'antd';
+import { Button, ConfigProvider, DatePicker, Flex, Form, Image, Input, notification, Select, Upload } from 'antd';
 
 export default function MesinForm({ form, onCancel }) {
 	const [submitLoading, setSubmitLoading] = React.useState(false);
@@ -76,89 +76,91 @@ export default function MesinForm({ form, onCancel }) {
 	};
 
 	return (
-		<Form form={form} layout='vertical' onFinish={onSubmit}>
-			{/* Hidden Fields */}
-			<Form.Item name='id' hidden>
-				<Input />
-			</Form.Item>
+		<ConfigProvider theme={{ token: { colorTextDisabled: 'rgba(0, 0, 0, 0.88)' } }}>
+			<Form form={form} layout='vertical' onFinish={onSubmit}>
+				{/* Hidden Fields */}
+				<Form.Item name='id' hidden>
+					<Input />
+				</Form.Item>
 
-			{/* Image */}
-			<Form.Item
-				name='image'
-				label='Gambar'
-				valuePropName='fileList'
-				getValueFromEvent={normFile}
-				rules={[{ type: 'array', required: true, message: 'Harap pilih gambar!' }]}
-			>
-				<Upload name='image' listType='picture' onPreview={onPreview} maxCount={1}>
-					<Button icon={<UploadOutlined />} disabled={watchImage?.length > 0}>
-						Pilih Gambar
-					</Button>
-				</Upload>
-			</Form.Item>
-			{imagePreview ? (
-				<Image
-					wrapperStyle={{ display: 'none' }}
-					preview={{
-						visible: previewVisible,
-						onVisibleChange: (visible) => setPreviewVisible(visible),
-						afterOpenChange: (visible) => !visible && setImagePreview(null),
-					}}
-					src={imagePreview}
-					alt='Gambar Mesin'
-				/>
-			) : null}
+				{/* Image */}
+				<Form.Item
+					name='image'
+					label='Gambar'
+					valuePropName='fileList'
+					getValueFromEvent={normFile}
+					rules={[{ type: 'array', required: true, message: 'Harap pilih gambar!' }]}
+				>
+					<Upload name='image' listType='picture' onPreview={onPreview} maxCount={1}>
+						<Button icon={<UploadOutlined />} disabled={watchImage?.length > 0}>
+							Pilih Gambar
+						</Button>
+					</Upload>
+				</Form.Item>
+				{imagePreview ? (
+					<Image
+						wrapperStyle={{ display: 'none' }}
+						preview={{
+							visible: previewVisible,
+							onVisibleChange: (visible) => setPreviewVisible(visible),
+							afterOpenChange: (visible) => !visible && setImagePreview(null),
+						}}
+						src={imagePreview}
+						alt='Gambar Mesin'
+					/>
+				) : null}
 
-			{/* Machine Name */}
-			<Form.Item name='machineName' label='Nama' rules={[{ required: true, message: 'Harap masukkan nama mesin' }]}>
-				<Input placeholder='Masukkan nama mesin' disabled={submitLoading} allowClear />
-			</Form.Item>
+				{/* Machine Name */}
+				<Form.Item name='machineName' label='Nama' rules={[{ required: true, message: 'Harap masukkan nama mesin' }]}>
+					<Input placeholder='Masukkan nama mesin' disabled={submitLoading} allowClear />
+				</Form.Item>
 
-			{/* Category */}
-			<Form.Item name='categoryName' hidden>
-				<Input />
-			</Form.Item>
-			<Form.Item name='categoryId' label='Kategori' rules={[{ required: true, message: 'Harap pilih kategori mesin' }]}>
-				<Select
-					placeholder='Pilih kategori mesin'
-					onChange={(_, { label }) => form.setFieldsValue({ categoryName: label })}
-					options={kategori?.map((item) => ({ value: item.id, label: item.categoryName }))}
-					disabled={submitLoading}
-					allowClear
-				/>
-			</Form.Item>
+				{/* Category */}
+				<Form.Item name='categoryName' hidden>
+					<Input />
+				</Form.Item>
+				<Form.Item name='categoryId' label='Kategori' rules={[{ required: true, message: 'Harap pilih kategori mesin' }]}>
+					<Select
+						placeholder='Pilih kategori mesin'
+						onChange={(_, { label }) => form.setFieldsValue({ categoryName: label })}
+						options={kategori?.map((item) => ({ value: item.id, label: item.categoryName }))}
+						disabled={submitLoading}
+						allowClear
+					/>
+				</Form.Item>
 
-			{/* Buy Date */}
-			<Form.Item
-				name='buyDate'
-				label='Tanggal'
-				rules={[{ type: 'object', required: true, message: 'Harap pilih tanggal beli mesin' }]}
-			>
-				<DatePicker
-					format='DD-MM-YYYY'
-					placeholder='Masukkan tanggal beli mesin'
-					style={{ width: '100%' }}
-					disabled={submitLoading}
-				/>
-			</Form.Item>
+				{/* Buy Date */}
+				<Form.Item
+					name='buyDate'
+					label='Tanggal'
+					rules={[{ type: 'object', required: true, message: 'Harap pilih tanggal beli mesin' }]}
+				>
+					<DatePicker
+						format='DD-MM-YYYY'
+						placeholder='Masukkan tanggal beli mesin'
+						style={{ width: '100%' }}
+						disabled={submitLoading}
+					/>
+				</Form.Item>
 
-			{/* Description */}
-			<Form.Item name='description' label='Keterangan'>
-				<Input.TextArea placeholder='Masukkan keterangan' rows={3} disabled={submitLoading} allowClear />
-			</Form.Item>
+				{/* Description */}
+				<Form.Item name='description' label='Keterangan'>
+					<Input.TextArea placeholder='Masukkan keterangan' rows={3} disabled={submitLoading} allowClear />
+				</Form.Item>
 
-			{/* Button Action */}
-			<Form.Item style={{ marginBottom: 10 }}>
-				<Flex justify='flex-end' gap={10}>
-					<Button type='primary' htmlType='submit' size='large' icon={btnOk.icon} loading={submitLoading}>
-						{btnOk.text}
-					</Button>
-					<Button size='large' icon={<CloseOutlined />} onClick={onCancel} loading={submitLoading}>
-						Batal
-					</Button>
-				</Flex>
-			</Form.Item>
-			{notifContext}
-		</Form>
+				{/* Button Action */}
+				<Form.Item style={{ marginBottom: 10 }}>
+					<Flex justify='flex-end' gap={10}>
+						<Button type='primary' htmlType='submit' size='large' icon={btnOk.icon} loading={submitLoading}>
+							{btnOk.text}
+						</Button>
+						<Button size='large' icon={<CloseOutlined />} onClick={onCancel} loading={submitLoading}>
+							Batal
+						</Button>
+					</Flex>
+				</Form.Item>
+				{notifContext}
+			</Form>
+		</ConfigProvider>
 	);
 }

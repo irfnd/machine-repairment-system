@@ -4,9 +4,11 @@ import { parseDate, parseNumber } from '@/utils/parse';
 import { DatePicker, Input, InputNumber, Select } from 'antd';
 
 export default function RenderFilterInput(props) {
-	const { dataIndex, fieldType, filterProps, flagFields, setFilter } = props;
+	const { slice, dataIndex, fieldType, filterProps, flagFields, setFilter } = props;
 	const { setSelectedKeys, selectedKeys, confirm } = filterProps;
-	const { table } = useStore();
+
+	const state = useStore();
+	const table = state[slice].table;
 	const { inputRef } = table;
 
 	const onSetFilter = ({ value, isDate = false }) => {

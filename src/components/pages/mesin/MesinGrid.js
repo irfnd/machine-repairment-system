@@ -11,8 +11,8 @@ import { AppstoreAddOutlined } from '@ant-design/icons';
 import { Button, Empty, Flex, Row, Skeleton } from 'antd';
 
 export default function MesinGrid() {
-	const { table, mesin: mesinState, setMesin } = useStore();
-	const { filter, pagination } = table;
+	const { mesin: mesinState, setMesin } = useStore();
+	const { filter, pagination } = mesinState.table;
 	const { getPermission } = useRoleMenu();
 
 	const permission = getPermission('/mesin');
@@ -35,7 +35,7 @@ export default function MesinGrid() {
 	}, [mesin, mesinState, reshapedFilter]);
 
 	return (
-		<Flex vertical gap={25} style={{ width: '100%', height: '100%' }}>
+		<Flex vertical gap={25} style={{ width: '100%' }}>
 			<Flex justify='space-between'>
 				{/* Search Form */}
 				<MesinGridSearch loading={mesin.isLoading || kategori.isLoading} />
@@ -54,19 +54,21 @@ export default function MesinGrid() {
 			</Flex>
 
 			{/* Cards */}
-			<Skeleton loading={mesin.isLoading || kategori.isLoading} title={null} paragraph={{ rows: 12 }} active>
-				{mesin.data?.machines?.length > 0 ? (
-					<Row gutter={[16, 16]}>
-						{mesin.data.machines.map((item) => (
-							<MesinCard key={item.id} mesin={item} />
-						))}
-					</Row>
-				) : (
-					<Flex justify='center' align='center' style={{ height: '100%' }}>
-						<Empty description='Tidak ada data' />
-					</Flex>
-				)}
-			</Skeleton>
+			<Flex vertical style={{ flexBasis: '100%' }}>
+				<Skeleton loading={mesin.isLoading || kategori.isLoading} title={null} paragraph={{ rows: 12 }} active>
+					{mesin.data?.machines?.length > 0 ? (
+						<Row gutter={[16, 16]}>
+							{mesin.data.machines.map((item) => (
+								<MesinCard key={item.id} mesin={item} />
+							))}
+						</Row>
+					) : (
+						<Flex justify='center' align='center' style={{ height: '100%' }}>
+							<Empty description='Tidak ada data' />
+						</Flex>
+					)}
+				</Skeleton>
+			</Flex>
 
 			{/* Pagination */}
 			<MesinGridPagination loading={mesin.isLoading || kategori.isLoading} />

@@ -1,30 +1,30 @@
-import { deleteKerusakan, getKerusakanById } from '@/requests';
+import { deletePerbaikan, getPerbaikanById } from '@/requests';
 import { useStore } from '@/states';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as React from 'react';
 
-import KerusakanDetail from '@/components/pages/kerusakan/KerusakanDetail';
+import PerbaikanDetail from '@/components/pages/perbaikan/PerbaikanDetail';
 import { CloseOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Button, Flex, Modal, Skeleton, notification } from 'antd';
 
-export default function KerusakanDeleteModal() {
+export default function PerbaikanDeleteModal() {
 	const [deleteLoading, setDeleteLoading] = React.useState(false);
 
 	const [notif, notifContext] = notification.useNotification();
-	const { kerusakan, setKerusakan } = useStore();
+	const { perbaikan, setKerusakan } = useStore();
 	const queryClient = useQueryClient();
 
 	const isGetKerusakanById = React.useMemo(() => {
-		const { formType, selectedData } = kerusakan;
+		const { formType, selectedData } = perbaikan;
 		return formType === 'delete' && selectedData && !selectedData.machine;
-	}, [kerusakan]);
+	}, [perbaikan]);
 
-	const kerusakanById = useQuery({
-		queryKey: ['kerusakan', kerusakan?.selectedData?.id],
+	const perbaikanById = useQuery({
+		queryKey: ['perbaikan', perbaikan?.selectedData?.id],
 		queryFn: async () => {
 			try {
-				const { selectedData } = kerusakan;
-				const data = await getKerusakanById(selectedData?.id);
+				const { selectedData } = perbaikan;
+				const data = await getPerbaikanById(selectedData?.id);
 				setKerusakan({ selectedData: data });
 				return data;
 			} catch (err) {
@@ -36,10 +36,10 @@ export default function KerusakanDeleteModal() {
 	});
 
 	const queryMutation = useMutation({
-		mutationFn: deleteKerusakan,
+		mutationFn: deletePerbaikan,
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['kerusakan'] });
-			notif.success({ message: 'Berhasil Dihapus', description: 'Data Laporan Kerusakan Berhasil Dihapus' });
+			queryClient.invalidateQueries({ queryKey: ['perbaikan'] });
+			notif.success({ message: 'Berhasil Dihapus', description: 'Data Laporan Perbaikan Berhasil Dihapus' });
 			setDeleteLoading(false);
 			onCancel();
 		},
@@ -51,7 +51,7 @@ export default function KerusakanDeleteModal() {
 
 	const onDelete = () => {
 		setDeleteLoading(true);
-		queryMutation.mutate(kerusakan.selectedData?.id);
+		queryMutation.mutate(perbaikan.selectedData?.id);
 	};
 
 	const onCancel = () => {
@@ -67,8 +67,8 @@ export default function KerusakanDeleteModal() {
 
 	return (
 		<Modal
-			title='Hapus Laporan Kerusakan'
-			open={kerusakan.modalDeleteVisible}
+			title='Hapus Laporan Perbaikan'
+			open={perbaikan.modalDeleteVisible}
 			onOk={onDelete}
 			onCancel={onCancel}
 			width={400}
@@ -78,7 +78,7 @@ export default function KerusakanDeleteModal() {
 					size='large'
 					icon={<DeleteOutlined />}
 					onClick={onDelete}
-					loading={deleteLoading || kerusakanById.isLoading}
+					loading={deleteLoading || perbaikanById.isLoading}
 					key='hapus'
 					danger
 				>
@@ -89,7 +89,7 @@ export default function KerusakanDeleteModal() {
 					icon={<CloseOutlined />}
 					onClick={onCancel}
 					key='batal'
-					loading={deleteLoading || kerusakanById.isLoading}
+					loading={deleteLoading || perbaikanById.isLoading}
 				>
 					Batal
 				</Button>,
@@ -97,9 +97,9 @@ export default function KerusakanDeleteModal() {
 			centered
 		>
 			<Flex style={{ padding: '10px 0' }} gap={20} vertical>
-				<Skeleton loading={kerusakanById.isLoading} title={null} paragraph={{ rows: 8 }} active>
-					<p style={{ margin: 0 }}>Apakah anda yakin ingin menghapus laporan kerusakan ini?</p>
-					<KerusakanDetail loading={kerusakanById.isLoading} />
+				<Skeleton loading={perbaikanById.isLoading} title={null} paragraph={{ rows: 8 }} active>
+					<p style={{ margin: 0 }}>Apakah anda yakin ingin menghapus laporan perbaikan ini?</p>
+					<PerbaikanDetail loading={perbaikanById.isLoading} />
 				</Skeleton>
 			</Flex>
 

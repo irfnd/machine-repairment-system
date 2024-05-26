@@ -1,15 +1,13 @@
 import { useStore } from '@/states';
-import { useRoleMenu } from '@/utils/hooks';
+import { useRoleMenu, useUser } from '@/utils/hooks';
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 
 import {
 	CarryOutOutlined,
-	ExceptionOutlined,
 	FileDoneOutlined,
 	FileSearchOutlined,
 	SettingOutlined,
-	SolutionOutlined,
 	TeamOutlined,
 	UserOutlined,
 } from '@ant-design/icons';
@@ -18,24 +16,29 @@ import { Menu } from 'antd';
 export default function MenuBar({ inDrawer = false }) {
 	const { setSidebar } = useStore();
 	const { menu: roleMenu } = useRoleMenu();
+	const user = useUser();
 	const pathname = usePathname();
 	const router = useRouter();
 
 	const selectedKey = React.useMemo(() => `${pathname === '/' ? undefined : pathname}`, [pathname]);
 
+	const labelMenu = React.useMemo(() => {
+		let labels = {};
+		if (user?.role === 'supervisior') Object.assign(labels, { teknisi: 'Data Karyawan' });
+		else Object.assign(labels, { teknisi: 'Data Teknisi' });
+		return labels;
+	}, [user]);
+
 	const allMenu = React.useMemo(
 		() => [
 			{ key: '/absensi', icon: <CarryOutOutlined style={{ fontSize: 18 }} />, label: 'Absensi' },
 			{ key: '/mesin', icon: <SettingOutlined style={{ fontSize: 18 }} />, label: 'Data Mesin' },
-			{ key: '/kerusakan', icon: <ExceptionOutlined style={{ fontSize: 18 }} />, label: 'Laporan Kerusakan' },
-			{ key: '/penugasan', icon: <SolutionOutlined style={{ fontSize: 18 }} />, label: 'Penugasan' },
 			{ key: '/perbaikan', icon: <FileSearchOutlined style={{ fontSize: 18 }} />, label: 'Laporan Perbaikan' },
 			{ key: '/hasil-perbaikan', icon: <FileDoneOutlined style={{ fontSize: 18 }} />, label: 'Laporan Hasil Perbaikan' },
-			{ key: '/karyawan', icon: <TeamOutlined style={{ fontSize: 18 }} />, label: 'Data Karyawan' },
-			{ key: '/teknisi', icon: <TeamOutlined style={{ fontSize: 18 }} />, label: 'Data Teknisi' },
+			{ key: '/teknisi', icon: <TeamOutlined style={{ fontSize: 18 }} />, label: labelMenu.teknisi },
 			{ key: '/biodata', icon: <UserOutlined style={{ fontSize: 18 }} />, label: 'Biodata' },
 		],
-		[]
+		[labelMenu]
 	);
 
 	const menuList = React.useMemo(() => {

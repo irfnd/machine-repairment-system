@@ -2,12 +2,23 @@
 	"supervisior": [
 		{ "menu": "/mesin", "permission": "CRUD" },
 		{ "menu": "/hasil-perbaikan", "permission": "R" },
-		{ "menu": "/karyawan", "permission": "CRUD" },
+		{ "menu": "/teknisi", "permission": "CRUD" },
+		{ "menu": "/biodata", "permission": "CRUD" }
+	],
+	"leader": [
+		{ "menu": "/perbaikan", "permission": "CRUD" },
+		{ "menu": "/hasil-perbaikan", "permission": "R" },
+		{ "menu": "/teknisi", "permission": "R" },
 		{ "menu": "/biodata", "permission": "CRUD" }
 	],
 	"produksi": [
-		{ "menu": "/mesin", "permission": "CRUD" },
-		{ "menu": "/kerusakan", "permission": "CRUD" },
+		{ "menu": "/mesin", "permission": "R" },
+		{ "menu": "/perbaikan", "permission": "CRUD" },
+		{ "menu": "/biodata", "permission": "CRUD" }
+	],
+	"teknisi": [
+		{ "menu": "/absensi", "permission": "C" },
+		{ "menu": "/perbaikan", "permission": "CRUD" },
 		{ "menu": "/biodata", "permission": "CRUD" }
 	]
 }

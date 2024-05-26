@@ -8,6 +8,15 @@ export const mesinSlice = (set) => ({
 		modalUpdateVisible: false,
 		modalDeleteVisible: false,
 		formType: 'add',
+
+		table: {
+			filter: {},
+			localFilter: {},
+			inputValue: '',
+			inputRef: { current: null },
+			pagination: { current: 1, pageSize: 10, total: 0 },
+		},
 	},
+	setMesinTable: (newData) => set(({ mesin }) => ({ mesin: { ...mesin, table: { ...mesin.table, ...newData } } })),
 	setMesin: (newData) => set(({ mesin }) => ({ mesin: { ...mesin, ...newData } })),
 });

@@ -2,13 +2,14 @@ import { useStore } from '@/states';
 import { omitObject } from '@/utils/object';
 import _ from 'lodash';
 
-import { Flex, Button } from 'antd';
-import { SearchOutlined, CloseOutlined } from '@ant-design/icons';
 import { RenderFilterExist, RenderFilterNotExist } from '@/components/table/RenderFilterHighlighter';
 import RenderFilterInput from '@/components/table/RenderFilterInput';
+import { CloseOutlined, SearchOutlined } from '@ant-design/icons';
+import { Button, Flex } from 'antd';
 
 export function ColumnProps(props) {
 	const {
+		slice,
 		dataIndex,
 		centerFields = [],
 		rightFields = [],
@@ -18,8 +19,9 @@ export function ColumnProps(props) {
 		currencyFields = [],
 		flagFields = {},
 	} = props;
-	const { table, setTable } = useStore.getState();
-	const { inputRef } = table;
+	const state = useStore.getState();
+	const table = state[slice].table;
+	const setTable = (newData) => state[`set${_.startCase(slice)}Table`](newData);
 
 	const debounceFilter = _.debounce(({ value, key }) => {
 		setTable({ filter: { ...table.filter, [key]: value } });
@@ -67,7 +69,7 @@ export function ColumnProps(props) {
 		filterDropdown: (filterProps) => {
 			const { confirm, clearFilters } = filterProps;
 			const fieldType = checkFieldType();
-			const inputProps = { dataIndex, fieldType, filterProps, flagFields, setFilter };
+			const inputProps = { slice, dataIndex, fieldType, filterProps, flagFields, setFilter };
 
 			return (
 				<Flex gap={8} style={{ padding: 8, width: 250 }} onKeyDown={(e) => e.stopPropagation()}>
@@ -89,8 +91,8 @@ export function ColumnProps(props) {
 		onFilterDropdownOpenChange: (visible) => {
 			if (visible) {
 				setTimeout(() => {
-					if (inputRef.current?.name === 'inputText') inputRef.current?.select();
-					else inputRef.current?.focus();
+					if (table.inputRef.current?.name === 'inputText') table.inputRef.current?.select();
+					else table.inputRef.current?.focus();
 				});
 			}
 		},

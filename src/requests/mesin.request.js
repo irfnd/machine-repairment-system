@@ -1,15 +1,15 @@
-import { api } from '@/utils/api';
 import { useStore } from '@/states';
+import { api } from '@/utils/api';
 
-export const browseMesin = async ({ queryKey }) => {
+export async function browseMesin({ queryKey }) {
 	const [_key, params] = queryKey;
-	const { table, setTable } = useStore.getState();
+	const { mesin, setMesinTable } = useStore.getState();
 
 	try {
 		const { data } = await api.get('/machine/all', { params });
-		setTable({
+		setMesinTable({
 			pagination: {
-				...table.pagination,
+				...mesin.table.pagination,
 				current: data?.data.pagination.currentPage || 1,
 				total: data?.data.pagination.totalData || 0,
 			},
@@ -18,31 +18,31 @@ export const browseMesin = async ({ queryKey }) => {
 	} catch (err) {
 		throw new Error(err.response?.data?.message || 'Terjadi kesalahan!');
 	}
-};
+}
 
-export const addMesin = async (newData) => {
+export async function addMesin(newData) {
 	try {
 		const { data } = await api.post('/machine/create', newData);
 		return data?.data;
 	} catch (err) {
 		throw new Error(err.response?.data?.message || 'Terjadi kesalahan!');
 	}
-};
+}
 
-export const updateMesin = async ({ id, newData }) => {
+export async function updateMesin({ id, newData }) {
 	try {
 		const { data } = await api.patch(`/machine/edit/${id}`, newData);
 		return data?.data;
 	} catch (err) {
 		throw new Error(err.response?.data?.message || 'Terjadi kesalahan!');
 	}
-};
+}
 
-export const deleteMesin = async (id) => {
+export async function deleteMesin(id) {
 	try {
 		const { data } = await api.delete(`/machine/${id}`);
 		return data?.data;
 	} catch (err) {
 		throw new Error(err.response?.data?.message || 'Terjadi kesalahan!');
 	}
-};
+}

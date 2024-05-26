@@ -8,13 +8,13 @@ import { Input, Select, Space } from 'antd';
 export default function MesinGridSearch({ loading, selectBox = false }) {
 	const localSearchRef = React.useRef(null);
 
-	const { table, kategori: getKategori, setMesin, setTable } = useStore();
-	const { filter, localFilter } = table;
+	const { mesin, kategori: getKategori, setMesin, setMesinTable } = useStore();
+	const { filter, localFilter } = mesin.table;
 	const { kategori } = getKategori;
 
 	const debounceFilter = React.useMemo(
-		() => _.debounce(({ key, value }) => setTable({ filter: { ...filter, [key]: value } }), 500),
-		[filter, setTable]
+		() => _.debounce(({ key, value }) => setMesinTable({ filter: { ...filter, [key]: value } }), 500),
+		[filter, setMesinTable]
 	);
 
 	React.useEffect(() => {
@@ -28,14 +28,14 @@ export default function MesinGridSearch({ loading, selectBox = false }) {
 	const onResetFilter = (key) => {
 		const getFilter = { ...filter };
 		delete getFilter[key];
-		setTable({ filter: getFilter, localFilter: getFilter });
+		setMesinTable({ filter: getFilter, localFilter: getFilter });
 	};
 
 	const onSearch = (key, value) => {
 		if (value?.length < 1 || value === undefined) {
 			onResetFilter(key);
 		} else {
-			setTable({ localFilter: { ...localFilter, [key]: value } });
+			setMesinTable({ localFilter: { ...localFilter, [key]: value } });
 			debounceFilter({ key, value });
 		}
 	};

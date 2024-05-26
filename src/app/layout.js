@@ -1,7 +1,7 @@
-import { Inter } from 'next/font/google';
+import { theme } from '@/themes';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { ConfigProvider } from 'antd';
-import { theme } from '@/themes';
+import { Inter } from 'next/font/google';
 
 const inter = Inter({ subsets: ['latin'] });
 

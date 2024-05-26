@@ -18,13 +18,13 @@ export const parseFormData = (data, groupFields = {}) => {
 					const fileValue = Array.isArray(data[current]) && data[current].length > 0 ? data[current][0].originFileObj : null;
 					return { ...previous, [current]: fileValue };
 				}
-				// if (groupFields.hasOwnProperty('multipleFile') && groupFields['multipleFile']?.includes(current)) {
-				// 	const fileValue =
-				// 		Array.isArray(data[current]) && data[current].length > 0
-				// 			? data[current].map(({ originFileObj }) => originFileObj)
-				// 			: null;
-				// 	return { ...previous, [current]: fileValue };
-				// }
+				if (groupFields.hasOwnProperty('multipleFile') && groupFields['multipleFile']?.includes(current)) {
+					const fileValue =
+						Array.isArray(data[current]) && data[current].length > 0
+							? data[current].map(({ originFileObj }) => originFileObj)
+							: null;
+					return { ...previous, [current]: fileValue };
+				}
 				return { ...previous, [current]: data[current] };
 			}, {})
 		).filter(([_, value]) => !(value === null || value === undefined))

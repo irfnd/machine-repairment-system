@@ -1,7 +1,7 @@
 import { api } from '@/utils/api';
 import { useStore } from '@/states';
 
-export const browseKategori = async () => {
+export async function browseKategori() {
 	const { setKategori } = useStore.getState();
 
 	try {
@@ -11,4 +11,4 @@ export const browseKategori = async () => {
 	} catch (err) {
 		throw new Error(err.response?.data?.message || 'Terjadi kesalahan!');
 	}
-};
+}

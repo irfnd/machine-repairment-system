@@ -7,12 +7,12 @@ import MesinGridPagination from '@/components/pages/mesin/MesinGridPagination';
 import MesinGridSearch from '@/components/pages/mesin/MesinGridSearch';
 import { Divider, Flex, Form, Select, Skeleton } from 'antd';
 
-export default function KerusakanFormSelectMesin({ loading, disabled }) {
+export default function PerbaikanFormSelectMesin({ loading, disabled }) {
 	const [selectMesin, setSelectMesin] = React.useState(false);
 	const [selectedMesin, setSelectedMesin] = React.useState([]);
 
-	const { table, mesin: mesinState, kerusakan } = useStore();
-	const { filter, pagination } = table;
+	const { mesin: mesinState, perbaikan } = useStore();
+	const { filter, pagination } = mesinState.table;
 
 	const reshapedFilter = React.useMemo(() => {
 		const { current: page, pageSize: limit } = pagination;
@@ -28,11 +28,11 @@ export default function KerusakanFormSelectMesin({ loading, disabled }) {
 	}, [mesin, mesinState, reshapedFilter]);
 
 	React.useEffect(() => {
-		if (kerusakan?.selectedData?.machine) {
-			const { machineId, machineName } = kerusakan.selectedData;
+		if (perbaikan?.selectedData?.machine) {
+			const { machineId, machineName } = perbaikan.selectedData;
 			setSelectedMesin([{ value: machineId, label: machineName }]);
 		}
-	}, [kerusakan, setSelectedMesin]);
+	}, [perbaikan, setSelectedMesin]);
 
 	return (
 		<Form.Item
@@ -48,13 +48,13 @@ export default function KerusakanFormSelectMesin({ loading, disabled }) {
 				placeholder='Pilih mesin'
 				dropdownRender={(options) => (
 					<Flex style={{ padding: 5 }} vertical>
-						<MesinGridSearch loading={mesin.isLoading} selectBox />
+						<MesinGridSearch loading={mesin.isFetching} selectBox />
 						<Divider style={{ margin: '8px 0' }} />
-						<Skeleton loading={mesin.isLoading} title={null} paragraph={{ rows: 4 }} active>
+						<Skeleton loading={mesin.isFetching} title={null} paragraph={{ rows: 4 }} active>
 							{options}
 						</Skeleton>
 						<Divider style={{ margin: '8px 0' }} />
-						<MesinGridPagination loading={mesin.isLoading} selectBox />
+						<MesinGridPagination loading={mesin.isFetching} selectBox />
 					</Flex>
 				)}
 				options={
