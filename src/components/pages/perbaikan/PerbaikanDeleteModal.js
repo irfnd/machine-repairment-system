@@ -51,7 +51,7 @@ export default function PerbaikanDeleteModal() {
 
 	const onDelete = () => {
 		setDeleteLoading(true);
-		queryMutation.mutate(perbaikan.selectedData?.id);
+		queryMutation.mutate(perbaikan?.selectedData?.id);
 	};
 
 	const onCancel = () => {
@@ -78,7 +78,7 @@ export default function PerbaikanDeleteModal() {
 					size='large'
 					icon={<DeleteOutlined />}
 					onClick={onDelete}
-					loading={deleteLoading || perbaikanById.isLoading}
+					loading={deleteLoading || perbaikanById.isFetching}
 					key='hapus'
 					danger
 				>
@@ -89,7 +89,7 @@ export default function PerbaikanDeleteModal() {
 					icon={<CloseOutlined />}
 					onClick={onCancel}
 					key='batal'
-					loading={deleteLoading || perbaikanById.isLoading}
+					loading={deleteLoading || perbaikanById.isFetching}
 				>
 					Batal
 				</Button>,
@@ -97,7 +97,7 @@ export default function PerbaikanDeleteModal() {
 			centered
 		>
 			<Flex style={{ padding: '10px 0' }} gap={20} vertical>
-				<Skeleton loading={perbaikanById.isLoading} title={null} paragraph={{ rows: 8 }} active>
+				<Skeleton loading={perbaikanById.isFetching} title={null} paragraph={{ rows: 8 }} active>
 					<p style={{ margin: 0 }}>Apakah anda yakin ingin menghapus laporan perbaikan ini?</p>
 					<PerbaikanDetail />
 				</Skeleton>
