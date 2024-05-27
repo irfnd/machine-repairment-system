@@ -53,7 +53,7 @@ export default function PerbaikanDetailModal({ isDone = false }) {
 		>
 			<Flex style={{ padding: '10px 0' }} gap={20} vertical>
 				<Skeleton loading={perbaikanById.isFetching} title={null} paragraph={{ rows: 8 }} active>
-					<PerbaikanDetail loading={perbaikanById.isFetching} />
+					<PerbaikanDetail />
 				</Skeleton>
 			</Flex>
 

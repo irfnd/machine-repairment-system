@@ -11,10 +11,10 @@ export default function PerbaikanDeleteModal() {
 	const [deleteLoading, setDeleteLoading] = React.useState(false);
 
 	const [notif, notifContext] = notification.useNotification();
-	const { perbaikan, setKerusakan } = useStore();
+	const { perbaikan, setPerbaikan } = useStore();
 	const queryClient = useQueryClient();
 
-	const isGetKerusakanById = React.useMemo(() => {
+	const isGetPerbaikanById = React.useMemo(() => {
 		const { formType, selectedData } = perbaikan;
 		return formType === 'delete' && selectedData && !selectedData.machine;
 	}, [perbaikan]);
@@ -25,14 +25,14 @@ export default function PerbaikanDeleteModal() {
 			try {
 				const { selectedData } = perbaikan;
 				const data = await getPerbaikanById(selectedData?.id);
-				setKerusakan({ selectedData: data });
+				setPerbaikan({ selectedData: data });
 				return data;
 			} catch (err) {
 				notif.error({ message: `Gagal Mengambil Data`, description: err.message });
 				throw new Error(err);
 			}
 		},
-		enabled: !!isGetKerusakanById,
+		enabled: !!isGetPerbaikanById,
 	});
 
 	const queryMutation = useMutation({
@@ -55,7 +55,7 @@ export default function PerbaikanDeleteModal() {
 	};
 
 	const onCancel = () => {
-		setKerusakan({
+		setPerbaikan({
 			modalShowVisible: false,
 			modalAddVisible: false,
 			modalUpdateVisible: false,
@@ -99,7 +99,7 @@ export default function PerbaikanDeleteModal() {
 			<Flex style={{ padding: '10px 0' }} gap={20} vertical>
 				<Skeleton loading={perbaikanById.isLoading} title={null} paragraph={{ rows: 8 }} active>
 					<p style={{ margin: 0 }}>Apakah anda yakin ingin menghapus laporan perbaikan ini?</p>
-					<PerbaikanDetail loading={perbaikanById.isLoading} />
+					<PerbaikanDetail />
 				</Skeleton>
 			</Flex>
 
