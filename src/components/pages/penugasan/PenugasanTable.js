@@ -4,6 +4,7 @@ import { useStore } from '@/states';
 import { useUser } from '@/utils/hooks';
 import { parseTableFilter } from '@/utils/parse';
 import { useQueries } from '@tanstack/react-query';
+import * as React from 'react';
 
 import KategoriMesinTags from '@/components/flags/KategoriMesinTags';
 import StatusPerbaikanTags from '@/components/flags/StatusPerbaikanTags';
@@ -100,12 +101,16 @@ export default function PenugasanTable() {
 		onShowSizeChange: handleSizeChange,
 	};
 
+	const filterPerbaikan = React.useMemo(() => {
+		return penugasan.data?.repairments.filter(({ status }) => status === 'Proses Perbaikan');
+	}, [penugasan]);
+
 	return (
 		<Flex vertical gap={25} style={{ width: '100%', height: '100%' }}>
 			<Table
 				loading={penugasan.isLoading || kategori.isLoading}
 				columns={columns}
-				dataSource={penugasan.data?.repairments}
+				dataSource={filterPerbaikan}
 				onChange={handleTableChange}
 				pagination={paginationOptions}
 				scroll={{ x: 'max-content' }}

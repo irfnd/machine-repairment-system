@@ -72,10 +72,15 @@ export default function PerbaikanTable() {
 	};
 
 	const updateBtnDisabled = React.useCallback(
-		(status) => {
-			if (user?.role === 'produksi') return status !== 'Menunggu Konfirmasi';
-			else if (user?.role === 'leader') return !['Menunggu Konfirmasi', 'Proses Perbaikan'].includes(status);
-			else return true;
+		(data) => {
+			if (user?.role === 'produksi') {
+				return data.status !== 'Menunggu Konfirmasi';
+			} else if (user?.role === 'leader') {
+				if (!data.isReported && data.status === 'Proses Perbaikan') return true;
+				return !['Menunggu Konfirmasi', 'Proses Perbaikan'].includes(data.status);
+			} else {
+				return true;
+			}
 		},
 		[user]
 	);
@@ -92,7 +97,7 @@ export default function PerbaikanTable() {
 						type='primary'
 						icon={<EditOutlined />}
 						onClick={() => onSetForm(data, 'update')}
-						disabled={updateBtnDisabled(data.status)}
+						disabled={updateBtnDisabled(data)}
 					/>
 					<Button
 						type='primary'

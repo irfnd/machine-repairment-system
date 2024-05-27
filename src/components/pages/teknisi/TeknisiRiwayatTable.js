@@ -3,6 +3,7 @@ import { browseKategori, browsePenugasan } from '@/requests';
 import { useStore } from '@/states';
 import { parseTableFilter } from '@/utils/parse';
 import { useQueries } from '@tanstack/react-query';
+import * as React from 'react';
 
 import KategoriMesinTags from '@/components/flags/KategoriMesinTags';
 import StatusPerbaikanTags from '@/components/flags/StatusPerbaikanTags';
@@ -92,12 +93,17 @@ export default function TeknisiRiwayatTable() {
 		onShowSizeChange: handleSizeChange,
 	};
 
+	const filterPerbaikan = React.useMemo(() => {
+		const selectedStatus = ['Menunggu Konfirmasi', 'Proses Perbaikan'];
+		return penugasan.data?.repairments.filter(({ status }) => !selectedStatus.includes(status));
+	}, [penugasan]);
+
 	return (
 		<Flex vertical gap={25} style={{ width: '100%', height: '100%' }}>
 			<Table
 				loading={penugasan.isLoading || kategori.isLoading}
 				columns={columns}
-				dataSource={penugasan.data?.repairments}
+				dataSource={filterPerbaikan}
 				onChange={handleTableChange}
 				pagination={paginationOptions}
 				scroll={{ x: 'max-content' }}
