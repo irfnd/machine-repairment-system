@@ -22,7 +22,7 @@ export default function LoginForm() {
 			setSubmitLoading(false);
 			setTimeout(() => router.replace('/'), 500);
 		} catch (err) {
-			if (err instanceof Error) notif.error({ message: 'Gagal Masuk', description: err.message });
+			notif.error({ message: 'Gagal Masuk', description: 'Email/Username atau Password salah!' });
 			setSubmitLoading(false);
 		}
 	};
