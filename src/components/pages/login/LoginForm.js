@@ -34,7 +34,7 @@ export default function LoginForm() {
 					<ShopOutlined style={{ fontSize: xs ? 40 : 45, color: token.colorPrimary }} />
 					<Flex vertical>
 						<p style={{ fontSize: xs ? 18 : 20, margin: 0, fontWeight: 700 }}>PT Sumber Boga Indonesia</p>
-						<span style={{ color: token.colorTextDescription }}>Machine Maintenance</span>
+						<span style={{ color: token.colorTextDescription }}>Machine Repairement System</span>
 					</Flex>
 				</Flex>
 

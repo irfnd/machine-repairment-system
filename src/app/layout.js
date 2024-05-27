@@ -6,8 +6,8 @@ import { Inter } from 'next/font/google';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-	title: { template: '%s | Machine Maintenance', default: 'Loading | Machine Maintenance' },
-	description: 'Machine Maintenance System',
+	title: { template: '%s | Machine Repairment System', default: 'Loading | Machine Repairment System' },
+	description: 'Machine Repairment System',
 };
 
 export default function RootLayout({ children }) {
